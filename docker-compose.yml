@@ -1,0 +1,18 @@
+version: '3.6'
+services:
+  frontend:
+    build:
+      context: .
+      target: frontend
+    restart: unless-stopped
+    tty: true
+    working_dir: /home/node/app
+    ports:
+      - '3000:3000'
+    volumes:
+      - '.:/home/node/app'
+      - /home/node/app/node_modules
+      - /home/node/app/.next
+    environment:
+      - CHOKIDAR_USEPOLLING=true npm run dev
+    command: npm run dev
