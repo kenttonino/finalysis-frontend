@@ -1,0 +1,12 @@
+overwrite: true
+schema: 'http://localhost:11000/graphql' # We will change this one based on the port of the backend
+documents: './src/**/*.graphql'
+generates:
+  src/graphql/generated/graphqlOperations.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typed-document-node
+    config:
+      avoidOptionals:
+        field: true
