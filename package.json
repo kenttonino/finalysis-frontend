@@ -9,6 +9,7 @@
     "lint": "eslint './**/*.{ts,tsx,js,jsx}'",
     "test": "jest --watchAll",
     "format": "prettier --write 'src/**/*.{ts,tsx,js,jsx}'",
+    "style:all": "tsc && npm run lint && npm run format",
     "gql-gen": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
