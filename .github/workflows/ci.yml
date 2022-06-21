@@ -1,4 +1,4 @@
-name: Backend
+name: frontend (develop)
 
 on:
   push:
@@ -7,24 +7,23 @@ on:
   pull_request:
     branches:
       - develop
+permissions:
+  checks: write
+  contents: write
 jobs:
-  ci:
+  build:
     runs-on: ${{ matrix.os }}
-
     strategy:
       matrix:
         os: [ubuntu-latest]
         node: [16]
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
       - name: Setup node env
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
-
       - name: Cache node_modules
         uses: actions/cache@v2
         with:
@@ -32,9 +31,31 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-
+      - name: Run build
+        run: |
+          npm install --legacy-peer-deps
+          npm run build --if-present
+  
+  clean:
+    runs-on: ${{ matrix.os }}
+    needs: build
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node: [16]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Install dependencies
-        run: npm ci
-
-      - name: Run code style check
-        run: npm run style:all
+        run: |
+          npm install --legacy-peer-deps
+      - name: Run linter
+        uses: wearerequired/lint-action@v2
+        with:
+          eslint: true
+          prettier: true
+      - name: Run prettier
+        uses: creyD/prettier_action@v4.2
+        with:
+          prettier_options: --write src/**/*.{ts,tsx,js,jsx}
+          only_changed: true
